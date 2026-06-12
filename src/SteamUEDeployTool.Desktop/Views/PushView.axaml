@@ -1,0 +1,140 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SteamUEDeployTool.Desktop.ViewModels"
+             xmlns:m="clr-namespace:SteamUEDeployTool.Core.Models;assembly=SteamUEDeployTool.Core"
+             x:Class="SteamUEDeployTool.Desktop.Views.PushView">
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16" MaxWidth="800">
+            <TextBlock Text="Push" FontSize="24" FontWeight="Bold" Foreground="White" />
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Full Push (Build + Deploy)" FontSize="16" Foreground="#CCCCCC" />
+                    <TextBlock Text="Select a Push Profile (created in Dashboard) to build and deploy in one step."
+                               FontSize="12" Foreground="#888" />
+
+                    <ComboBox ItemsSource="{Binding PushProfiles}"
+                              SelectedItem="{Binding SelectedPushProfile}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="m:PushProfile">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding StartPushCommand}" Content="Start Push"
+                                Width="120" Height="32" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Cook &amp; Package" FontSize="16" Foreground="#CCCCCC" />
+                    <TextBlock Text="Build + Cook + Stage + Pak. Full packaging ready for Steam deploy."
+                               FontSize="12" Foreground="#888" />
+                    <ComboBox ItemsSource="{Binding BuildProfiles}"
+                              SelectedItem="{Binding SelectedBuildProfile}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="m:BuildProfile">
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding BuildOnlyCommand}" Content="Cook &amp; Package" Width="140" />
+                        <Button Command="{Binding OpenBuildFolderCommand}" Content="Open Folder" Width="110" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Deploy to Steam" FontSize="16" Foreground="#CCCCCC" />
+                    <TextBlock Text="Uses the selected Build Profile's output path. Build first, then deploy."
+                               FontSize="12" Foreground="#888" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Build Profile (for output path)" Foreground="#888" FontSize="12" />
+                        <ComboBox ItemsSource="{Binding BuildProfiles}"
+                                  SelectedItem="{Binding SelectedBuildProfile}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="m:BuildProfile">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Deploy Target" Foreground="#888" FontSize="12" />
+                        <ComboBox ItemsSource="{Binding DeployTargets}"
+                                  SelectedItem="{Binding SelectedDeployTarget}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="m:DeployTarget">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Build Description (optional override)" Foreground="#888" FontSize="12" />
+                        <TextBox Text="{Binding DeployBuildDescription}"
+                                 Watermark="Leave empty to use Deploy Target's description" />
+                    </StackPanel>
+                    <Button Command="{Binding DeployOnlyCommand}" Content="Deploy" Width="100" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16" Margin="0,0,0,0"
+                    IsVisible="{Binding HasResult}">
+                <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Result" FontSize="14" Foreground="#CCCCCC" />
+                        <Button Grid.Column="1" FontSize="10" Height="22" Padding="8,0" Content="Copy"
+                                Command="{Binding CopyErrorsCommand}" />
+                    </Grid>
+                    <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                        <TextBlock Text="{Binding ResultMessage}" FontSize="13" Foreground="#CCCCCC"
+                                   TextWrapping="Wrap" FontFamily="Cascadia Code,Consolas,monospace" />
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Progress:" Foreground="#CCCCCC" FontSize="13"
+                                   VerticalAlignment="Center" />
+                        <ProgressBar Value="{Binding ProgressPercent}" Minimum="0" Maximum="100"
+                                     Width="250" Height="16" />
+                        <TextBlock Foreground="#888" FontSize="12" VerticalAlignment="Center">
+                            <Run Text="{Binding ProgressPercent, StringFormat=\{0:F0\}}" />
+                            <Run Text="%" />
+                        </TextBlock>
+                        <Button Command="{Binding CancelPushCommand}" Content="Cancel" Width="80"
+                                Height="28" IsEnabled="{Binding IsRunning}"
+                                Background="#AA3333" Foreground="White" FontSize="12" />
+                        <Button Command="{Binding OpenLogFolderCommand}" Content="Open Logs"
+                                Width="90" Height="28" FontSize="12" />
+                    </StackPanel>
+
+                    <TextBlock Grid.Row="1" Text="{Binding CurrentAction}" Foreground="#AAAAAA"
+                               FontSize="12" Margin="0,4,0,8" />
+
+                    <ScrollViewer x:Name="LogScroller" Grid.Row="2" Background="#1E1E1E" Padding="8" MaxHeight="400"
+                                  VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Logs}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding .}"
+                                               FontFamily="Cascadia Code,Consolas,monospace"
+                                               FontSize="11" Foreground="#CCCCCC" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

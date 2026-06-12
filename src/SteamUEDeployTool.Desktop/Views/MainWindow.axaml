@@ -1,0 +1,85 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SteamUEDeployTool.Desktop.ViewModels"
+        xmlns:v="clr-namespace:SteamUEDeployTool.Desktop.Views"
+        xmlns:core="clr-namespace:SteamUEDeployTool.Core;assembly=SteamUEDeployTool.Core"
+        x:Class="SteamUEDeployTool.Desktop.Views.MainWindow"
+        Title="Steam UE Deploy Tool"
+        Width="1280" Height="800"
+        MinWidth="900" MinHeight="600">
+    <Window.Styles>
+        <Style Selector="Button.NavButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#CCCCCC" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style Selector="Button.NavButton:pointerover">
+            <Setter Property="Background" Value="#333333" />
+        </Style>
+        <Style Selector="Button.NavButton.Active">
+            <Setter Property="Background" Value="#0078D4" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+    </Window.Styles>
+
+    <Grid ColumnDefinitions="220,*" Background="#1E1E1E">
+        <Border Grid.Column="0" Background="#252526" Padding="0,0,0,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Margin="0,16,0,16">
+                    <TextBlock Text="SDT" FontSize="22" FontWeight="Bold"
+                               Foreground="#0078D4" HorizontalAlignment="Center" />
+                    <TextBlock Text="Steam UE Deploy Tool" FontSize="11"
+                               Foreground="#888888" HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,12">
+                    <TextBlock Text="{Binding Source={x:Static core:VersionInfo.Version}, StringFormat='v{0}'}"
+                               FontSize="10" Foreground="#555555" HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <ScrollViewer>
+                    <StackPanel Spacing="2" Margin="4,0">
+                        <Button x:Name="BtnDashboard" Classes="NavButton Active"
+                                Command="{Binding NavigateToDashboardCommand}" Content="Dashboard" />
+                        <Button x:Name="BtnBuildConfig" Classes="NavButton"
+                                Command="{Binding NavigateToBuildConfigCommand}" Content="Build Config"
+                                ToolTip.Tip="Configure how your Unreal project gets built" />
+                        <Button x:Name="BtnDeployConfig" Classes="NavButton"
+                                Command="{Binding NavigateToDeployConfigCommand}" Content="Deploy Config"
+                                ToolTip.Tip="Configure Steam depot, branch and app settings" />
+                        <Button x:Name="BtnPush" Classes="NavButton"
+                                Command="{Binding NavigateToPushCommand}" Content="Push"
+                                ToolTip.Tip="Build and deploy to Steam in one step" />
+                        <Button x:Name="BtnAccountManager" Classes="NavButton"
+                                Command="{Binding NavigateToAccountManagerCommand}" Content="Accounts"
+                                ToolTip.Tip="Manage Steamworks login credentials" />
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:DashboardViewModel">
+                    <v:DashboardView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:BuildConfigViewModel">
+                    <v:BuildConfigView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:DeployConfigViewModel">
+                    <v:DeployConfigView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:PushViewModel">
+                    <v:PushView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:AccountManagerViewModel">
+                    <v:AccountManagerView />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+    </Grid>
+</Window>

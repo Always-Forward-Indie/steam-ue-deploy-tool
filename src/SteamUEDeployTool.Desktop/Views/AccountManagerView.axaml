@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SteamUEDeployTool.Desktop.ViewModels"
+             xmlns:m="clr-namespace:SteamUEDeployTool.Core.Models;assembly=SteamUEDeployTool.Core"
+             x:Class="SteamUEDeployTool.Desktop.Views.AccountManagerView">
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16" MaxWidth="600">
+            <TextBlock Text="Steam Accounts" FontSize="24" FontWeight="Bold" Foreground="White" />
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Add New Account" FontSize="14" Foreground="#CCCCCC" />
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Steamworks username (not your Steam store account)" Foreground="#888" FontSize="11" />
+                        <TextBox Text="{Binding NewUsername}" Watermark="Steamworks username" />
+                    </StackPanel>
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Password (stored encrypted)" Foreground="#888" FontSize="11" />
+                        <TextBox Text="{Binding NewPassword}" Watermark="Leave empty to skip"
+                                 PasswordChar="*" />
+                    </StackPanel>
+                    <Button Command="{Binding AddAccountCommand}" Content="Add Account" Width="120" />
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16"
+                    IsVisible="{Binding IsWaitingForGuardCode}">
+                <StackPanel Spacing="8">
+                    <TextBlock FontSize="14" Foreground="#FFB900" FontWeight="Bold">
+                        <Run Text="Steam Guard Code Required" />
+                    </TextBlock>
+                    <TextBlock Foreground="#CCCCCC" FontSize="12" TextWrapping="Wrap">
+                        <Run Text="A Steam Guard code was sent to your email or Steam mobile app." />
+                        <LineBreak />
+                        <Run Text="Enter the code below:" />
+                    </TextBlock>
+                    <TextBox Text="{Binding SteamGuardCode}" Watermark="XXXXX" FontSize="16"
+                             MaxWidth="120" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding SubmitGuardCodeCommand}" Content="Submit Code"
+                                Width="120" />
+                        <Button Command="{Binding CancelGuardCodeCommand}" Content="Cancel"
+                                Width="80" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Accounts" FontSize="14" Foreground="#CCCCCC"
+                                   VerticalAlignment="Center" />
+                        <Button Command="{Binding LoadCommand}" Content="Refresh" FontSize="11"
+                                Width="60" Height="24" />
+                    </StackPanel>
+
+                    <ListBox ItemsSource="{Binding Accounts}"
+                             SelectedItem="{Binding SelectedAccount}" Height="200">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="m:SteamAccount">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Username}" Width="150" FontSize="13" />
+                                    <TextBlock Text="{Binding HasSsfn, StringFormat='SSFN: {0}'}"
+                                               Width="80" FontSize="11" Foreground="#888" />
+                                    <TextBlock Text="{Binding HasCredential, StringFormat='Pwd: {0}'}"
+                                               Width="80" FontSize="11" Foreground="#888" />
+                                    <TextBlock Text="{Binding LastLoginAt, StringFormat='Last: {0:g}'}"
+                                               FontSize="11" Foreground="#666" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding LoginCommand}" Content="Login" Width="80" />
+                        <Button Command="{Binding LogoutCommand}" Content="Logout" Width="80" />
+                        <Button Command="{Binding DeleteAccountCommand}" Content="Delete" Width="80" />
+                    </StackPanel>
+
+                    <Border Background="#333333" CornerRadius="4" Padding="8">
+                        <Grid RowDefinitions="Auto,*">
+                            <Button Grid.Row="0" FontSize="10" Height="22" Padding="8,0" Content="Copy"
+                                    Command="{Binding CopyErrorsCommand}" HorizontalAlignment="Right"
+                                    Margin="0,0,0,4" />
+                            <ScrollViewer x:Name="StatusScroller" Grid.Row="1" MaxHeight="300" VerticalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="#CCCCCC"
+                                           TextWrapping="Wrap" FontFamily="Cascadia Code,Consolas,monospace" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

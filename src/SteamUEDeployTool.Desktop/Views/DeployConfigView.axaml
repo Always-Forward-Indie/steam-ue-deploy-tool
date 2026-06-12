@@ -1,0 +1,187 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SteamUEDeployTool.Desktop.ViewModels"
+             xmlns:m="clr-namespace:SteamUEDeployTool.Core.Models;assembly=SteamUEDeployTool.Core"
+             x:Class="SteamUEDeployTool.Desktop.Views.DeployConfigView">
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16" MaxWidth="700">
+            <TextBlock Text="Deploy Configuration" FontSize="24" FontWeight="Bold" Foreground="White"
+                       ToolTip.Tip="Configure how your build gets uploaded to Steam: App ID, depots, branch, and account." />
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Saved Targets" FontSize="14" Foreground="#CCCCCC" />
+                    <ListBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}"
+                             Height="120">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="m:DeployTarget">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Name}" Width="200" />
+                                    <TextBlock Text="{Binding AppId, StringFormat='App {0}'}" />
+                                    <TextBlock Text=" - " />
+                                    <TextBlock Text="{Binding BranchName}" Foreground="#888" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding SaveCommand}" Content="Save" Width="80" />
+                        <Button Command="{Binding DeleteCommand}" Content="Delete" Width="80" />
+                        <Button Command="{Binding ClearFormCommand}" Content="Clear" Width="80" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Target Settings" FontSize="14" Foreground="#CCCCCC" />
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Profile Name" Foreground="#888" FontSize="12" />
+                        <TextBox Text="{Binding Name}" Watermark="e.g. Staging Branch" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Steam App ID" Foreground="#888" FontSize="12" />
+                            <TextBlock Text="(?)" Foreground="#0078D4" FontSize="11"
+                                       ToolTip.Tip="Found in Steamworks Partner Portal: Home &gt; your app &gt; Technical Tools &gt; Edit Steamworks Settings. A number like 480 for Spacewar example." />
+                        </StackPanel>
+                        <TextBox Text="{Binding AppIdText}" Watermark="480" />
+                    </StackPanel>
+
+                    <Border Background="#252525" CornerRadius="6" Padding="12">
+                        <StackPanel Spacing="8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <TextBlock Text="Depots" FontSize="14" Foreground="#CCCCCC"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="(?)" Foreground="#0078D4" FontSize="11"
+                                               ToolTip.Tip="Depots are content containers in SteamPipe. Each depot = one content group (e.g. Windows build, Linux build). Found in Steamworks &gt; App Admin &gt; SteamPipe &gt; Depots." />
+                                </StackPanel>
+                                <Button Command="{Binding AddDepotCommand}" Content="+ Add Depot"
+                                        Width="100" FontSize="12" />
+                            </StackPanel>
+
+                            <ItemsControl ItemsSource="{Binding Depots}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate DataType="vm:DepotEditorViewModel">
+                                        <Border Background="#333333" CornerRadius="4" Padding="10" Margin="0,4">
+                                            <StackPanel Spacing="6">
+                                                <DockPanel>
+                                                    <TextBlock Text="Depot" Foreground="#888" FontSize="12"
+                                                               VerticalAlignment="Center" />
+                                                    <Button DockPanel.Dock="Right" FontSize="10"
+                                                            Command="{Binding DataContext.RemoveDepotCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                            CommandParameter="{Binding .}"
+                                                            Content="X" Width="28" Height="24" />
+                                                </DockPanel>
+
+                                                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" Margin="0,4">
+                                                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,4,4">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock Text="Depot ID" Foreground="#888" FontSize="11" />
+                                                            <TextBlock Text="(?)" Foreground="#0078D4" FontSize="10"
+                                                                       ToolTip.Tip="Numeric Depot ID from Steamworks SteamPipe page." />
+                                                        </StackPanel>
+                                                        <TextBox Text="{Binding DepotIdText}" />
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="4,0,0,4">
+                                                        <StackPanel Orientation="Horizontal" Spacing="4">
+                                                            <TextBlock Text="Content Root" Foreground="#888" FontSize="11" />
+                                                            <TextBlock Text="(?)" Foreground="#0078D4" FontSize="10"
+                                                                       ToolTip.Tip="Local folder containing the files to upload. Usually your built game folder (e.g. .../Windows)." />
+                                                        </StackPanel>
+                                                        <DockPanel>
+                                                            <Button DockPanel.Dock="Right" FontSize="10"
+                                                                    Command="{Binding DataContext.BrowseContentRootCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding .}"
+                                                                    Content="..." Width="28" Height="24" />
+                                                            <TextBox Text="{Binding ContentRoot}" />
+                                                        </DockPanel>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,4,4">
+                                                        <TextBlock Text="Local Path" Foreground="#888" FontSize="11"
+                                                                   ToolTip.Tip="File pattern to match in Content Root. Use * for all files." />
+                                                        <TextBox Text="{Binding LocalPath}" />
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="4,0,0,4">
+                                                        <TextBlock Text="Depot Path" Foreground="#888" FontSize="11"
+                                                                   ToolTip.Tip="Where files appear in Steam depot. Use . for root." />
+                                                        <TextBox Text="{Binding DepotPath}" />
+                                                    </StackPanel>
+
+                                                    <CheckBox Grid.Row="2" Grid.Column="0"
+                                                              IsChecked="{Binding Recursive}"
+                                                              Content="Recursive" Margin="0,4,0,0"
+                                                              ToolTip.Tip="Include all subdirectories." />
+                                                </Grid>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+
+                    <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Branch Name" Foreground="#888" FontSize="12" />
+                            <TextBlock Text="(?)" Foreground="#0078D4" FontSize="11"
+                                       ToolTip.Tip="SteamPipe branch name: default = main release, beta = public beta, staging = internal testing. Create branches in Steamworks &gt; App Admin &gt; SteamPipe &gt; Builds." />
+                        </StackPanel>
+                        <TextBox Text="{Binding BranchName}" />
+                    </StackPanel>
+
+                    <CheckBox IsChecked="{Binding SetLiveAfterUpload}"
+                              Content="Set branch live after upload"
+                              ToolTip.Tip="If checked, the uploaded build goes live immediately on the selected branch. Leave unchecked to upload first and manually set live later." />
+
+                    <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Build Description" Foreground="#888" FontSize="12" />
+                            <TextBlock Text="(?)" Foreground="#0078D4" FontSize="11"
+                                       ToolTip.Tip="Visible in Steamworks build history. Helps identify builds." />
+                        </StackPanel>
+                        <TextBox Text="{Binding BuildDescription}" Watermark="Nightly build #42" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="2">
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Steam Account" Foreground="#888" FontSize="12" />
+                            <TextBlock Text="(?)" Foreground="#0078D4" FontSize="11"
+                                       ToolTip.Tip="Which Steamworks account to use for this deploy. Must have upload permissions for this App ID. Manage accounts in the Accounts tab." />
+                        </StackPanel>
+                        <ComboBox ItemsSource="{Binding Accounts}"
+                                  SelectedItem="{Binding SelectedAccount}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="m:SteamAccount">
+                                    <TextBlock Text="{Binding Username}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <Button Command="{Binding ValidateCommand}" Content="Validate" Width="100" />
+
+                    <Border Background="#333333" CornerRadius="4" Padding="8"
+                            IsVisible="{Binding ValidationMessage, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <Grid RowDefinitions="Auto,*">
+                            <Button Grid.Row="0" FontSize="10" Height="22" Padding="8,0" Content="Copy"
+                                    Command="{Binding CopyErrorsCommand}" HorizontalAlignment="Right"
+                                    Margin="0,0,0,4" />
+                            <ScrollViewer Grid.Row="1" MaxHeight="300" VerticalScrollBarVisibility="Auto">
+                                <TextBlock Text="{Binding ValidationMessage}" FontSize="12"
+                                           Foreground="#CCCCCC" TextWrapping="Wrap"
+                                           FontFamily="Cascadia Code,Consolas,monospace" />
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

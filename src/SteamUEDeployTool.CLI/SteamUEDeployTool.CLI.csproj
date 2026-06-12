@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>SteamUEDeployTool.CLI</RootNamespace>
+    <AssemblyName>sdt</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SteamUEDeployTool.Core\SteamUEDeployTool.Core.csproj" />
+    <ProjectReference Include="..\SteamUEDeployTool.Infrastructure\SteamUEDeployTool.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console" Version="0.49.*" />
+    <PackageReference Include="Spectre.Console.Cli" Version="0.49.*" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.*" />
+  </ItemGroup>
+
+</Project>

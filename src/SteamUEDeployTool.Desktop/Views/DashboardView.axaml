@@ -1,0 +1,106 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SteamUEDeployTool.Desktop.ViewModels"
+             xmlns:m="clr-namespace:SteamUEDeployTool.Core.Models;assembly=SteamUEDeployTool.Core"
+             x:Class="SteamUEDeployTool.Desktop.Views.DashboardView">
+    <ScrollViewer Margin="24">
+        <StackPanel Spacing="16" MaxWidth="750">
+            <TextBlock Text="Dashboard" FontSize="24" FontWeight="Bold" Foreground="White" />
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Create Push Profile" FontSize="16" Foreground="#CCCCCC" />
+                    <TextBlock Text="A Push Profile links a Build Profile to a Deploy Target. Create them first in the Build Config and Deploy Config tabs."
+                               FontSize="12" Foreground="#888" TextWrapping="Wrap" />
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Profile Name" Foreground="#888" FontSize="12" />
+                        <TextBox Text="{Binding NewPushName}" Watermark="e.g. Release Push" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Build Profile" Foreground="#888" FontSize="12" />
+                        <ComboBox ItemsSource="{Binding AllBuildProfiles}"
+                                  SelectedItem="{Binding NewBuildProfile}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="m:BuildProfile">
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Deploy Target" Foreground="#888" FontSize="12" />
+                        <ComboBox ItemsSource="{Binding AllDeployTargets}"
+                                  SelectedItem="{Binding NewDeployTarget}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate DataType="m:DeployTarget">
+                                    <TextBlock>
+                                        <Run Text="{Binding Name}" />
+                                        <Run Text=" (App " Foreground="#888" />
+                                        <Run Text="{Binding AppId}" Foreground="#888" />
+                                        <Run Text=")" Foreground="#888" />
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Command="{Binding CreatePushProfileCommand}" Content="Create Push Profile"
+                                Width="150" />
+                        <TextBlock Text="{Binding DashboardMessage}" FontSize="12" Foreground="#AAAAAA"
+                                   VerticalAlignment="Center"
+                                   IsVisible="{Binding ShowMessage}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Push Profiles" FontSize="16" Foreground="#CCCCCC" />
+                        <Button Grid.Column="1" Command="{Binding DeletePushProfileCommand}"
+                                Content="Delete Selected" FontSize="11" Width="110" />
+                    </Grid>
+
+                    <ListBox ItemsSource="{Binding PushProfiles}"
+                             SelectedItem="{Binding SelectedPushProfile}"
+                             Height="160">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="m:PushProfile">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Text="{Binding Name}" Width="200" FontSize="13" />
+                                    <TextBlock Foreground="#888" FontSize="11" VerticalAlignment="Center">
+                                        <Run Text="Build:" />
+                                        <Run Text="{Binding BuildProfileId}" />
+                                        <Run Text=" Deploy:" />
+                                        <Run Text="{Binding DeployTargetId}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+
+            <Border Background="#2D2D2D" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Selected Profile Details" FontSize="16" Foreground="#CCCCCC" />
+                    <TextBlock Text="{Binding DetailsBuildProfile.Name, StringFormat='Build: {0}'}"
+                               FontSize="13" Foreground="#AAAAAA"
+                               IsVisible="{Binding DetailsBuildProfile, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    <TextBlock Text="{Binding DetailsDeployTarget.Name, StringFormat='Deploy: {0}'}"
+                               FontSize="13" Foreground="#AAAAAA"
+                               IsVisible="{Binding DetailsDeployTarget, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    <TextBlock FontSize="11" Foreground="#888">
+                        <Run Text="Go to the " />
+                        <Run Text="Push" Foreground="#0078D4" />
+                        <Run Text=" tab to start this push." />
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

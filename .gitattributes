@@ -1,0 +1,9 @@
+# Normalize line endings to LF for all text files
+* text=auto eol=lf
+
+# Force binary for known binary types
+*.exe binary
+*.dll binary
+*.png binary
+*.ico binary
+*.zip binary
