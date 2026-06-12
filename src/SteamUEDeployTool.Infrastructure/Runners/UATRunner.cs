@@ -33,8 +33,9 @@ public sealed class UATRunner : IBuildRunner
                 DateTime.UtcNow, LogLevel.Debug,
                 $"Arguments: {args}", "UAT"));
 
-            if (profile.CleanBuild)
-                PreCleanStagingDirectory(profile, logProgress);
+            // UAT always calls CleanStagingDirectory before staging, regardless of -clean flag.
+            // UE cooked files get ReadOnly attributes which causes Access Denied on Directory.Delete.
+            PreCleanStagingDirectory(profile, logProgress);
 
             var stdOut = new StringBuilder();
             var stdErr = new StringBuilder();
