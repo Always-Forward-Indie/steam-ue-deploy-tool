@@ -167,7 +167,13 @@ public sealed class UATRunner : IBuildRunner
         try
         {
             logProgress?.Report(new LogEntry(DateTime.UtcNow, LogLevel.Info,
-                $"Pre-cleaning staging directory (clearing read-only attributes): {stagingDir}", "UAT"));
+                $"Pre-cleaning staging directory: {stagingDir}", "UAT"));
+
+            // Clear ReadOnly on the root staging directory itself (UAT fails with Access Denied
+            // when the directory entry has ReadOnly set, even after all files inside are deleted)
+            var rootAttrs = File.GetAttributes(stagingDir);
+            if ((rootAttrs & FileAttributes.ReadOnly) != 0)
+                File.SetAttributes(stagingDir, rootAttrs & ~FileAttributes.ReadOnly);
 
             foreach (var file in Directory.EnumerateFiles(stagingDir, "*", SearchOption.AllDirectories))
             {
@@ -182,11 +188,17 @@ public sealed class UATRunner : IBuildRunner
                 if ((attrs & FileAttributes.ReadOnly) != 0)
                     File.SetAttributes(dir, attrs & ~FileAttributes.ReadOnly);
             }
+
+            // Pre-delete the directory entirely so UAT doesn't need to attempt deletion at all
+            Directory.Delete(stagingDir, recursive: true);
+
+            logProgress?.Report(new LogEntry(DateTime.UtcNow, LogLevel.Info,
+                "Staging directory pre-cleaned successfully.", "UAT"));
         }
         catch (Exception ex)
         {
             logProgress?.Report(new LogEntry(DateTime.UtcNow, LogLevel.Warning,
-                $"Could not clear read-only attributes on staging directory: {ex.Message}", "UAT"));
+                $"Could not pre-clean staging directory: {ex.Message}", "UAT"));
         }
     }
 
