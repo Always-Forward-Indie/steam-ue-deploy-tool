@@ -62,6 +62,7 @@ public static class SteamCmdValidator
             var bundledPaths = new[]
             {
                 Path.Combine(appDir, "tools", "steamcmd"),
+                Path.Combine(appDir, "..", "..", "tools", "steamcmd"),
                 Path.Combine(appDir, "..", "..", "..", "tools", "steamcmd"),
                 Path.Combine(appDir, "..", "..", "..", "..", "tools", "steamcmd")
             };

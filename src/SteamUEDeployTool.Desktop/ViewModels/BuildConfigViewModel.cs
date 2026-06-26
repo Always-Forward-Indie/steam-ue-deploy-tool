@@ -43,6 +43,9 @@ public partial class BuildConfigViewModel : ViewModelBase
     private bool _cleanBuild;
 
     [ObservableProperty]
+    private bool _bundleVCRedist = true;
+
+    [ObservableProperty]
     private string? _extraArgs;
 
     [ObservableProperty]
@@ -86,6 +89,7 @@ public partial class BuildConfigViewModel : ViewModelBase
         SelectedBuildConfigurationIndex = (int)value.BuildConfiguration;
         Cook = value.Cook;
         CleanBuild = value.CleanBuild;
+        BundleVCRedist = value.BundleVCRedist;
         ExtraArgs = value.ExtraArgs;
         OutputPathOverride = value.OutputPathOverride;
     }
@@ -256,6 +260,7 @@ public partial class BuildConfigViewModel : ViewModelBase
         SelectedBuildConfigurationIndex = 0;
         Cook = false;
         CleanBuild = false;
+        BundleVCRedist = true;
         ExtraArgs = null;
         OutputPathOverride = null;
         ValidationMessage = string.Empty;
@@ -274,6 +279,7 @@ public partial class BuildConfigViewModel : ViewModelBase
             BuildConfiguration = (BuildConfiguration)SelectedBuildConfigurationIndex,
             Cook = Cook,
             CleanBuild = CleanBuild,
+            BundleVCRedist = BundleVCRedist,
             ExtraArgs = ExtraArgs,
             OutputPathOverride = OutputPathOverride
         };

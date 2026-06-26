@@ -83,6 +83,8 @@ public class App : Application
                 services.AddSingleton<ISteamDeployer>(sp => sp.GetRequiredService<SteamCmdRunner>());
                 services.AddSingleton<ISteamCmdLoginService>(sp => sp.GetRequiredService<SteamCmdRunner>());
 
+                services.AddSingleton<IVCRedistBundler, VCRedistBundler>();
+
                 services.AddSingleton<BuildOrchestrator>();
                 services.AddSingleton<DeployOrchestrator>();
                 services.AddSingleton<PushPipelineService>();

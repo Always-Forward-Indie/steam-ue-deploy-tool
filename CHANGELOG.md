@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0] — 2026-06-26
+
+### Added
+- VC++ Redist bundling after Win64 build (`IVCRedistBundler` / `VCRedistBundler`):
+  - Copies `msvcp140.dll`, `vcruntime140.dll`, `vcruntime140_1.dll` into game `Binaries/Win64/`
+  - Searches DLLs across engine dir, VS 2022, and System32
+  - Copies `vc_redist.x64.exe` installer and generates `InstallScript.vdf` for Steam prerequisites
+  - `BundleVCRedist` option in `BuildProfile` (default `true`), exposed in GUI and serialized to profiles
+  - New `Bundling` stage in `PushStage` pipeline enum
+
+### Fixed
+- steamcmd resolution: added `../../tools/steamcmd` relative path for publish output layout in `SteamCmdValidator`
+
 ## [1.0.0] — 2026-06-05
 
 ### Added

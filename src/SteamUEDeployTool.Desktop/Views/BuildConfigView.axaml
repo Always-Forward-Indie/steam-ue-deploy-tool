@@ -92,6 +92,8 @@
                                   ToolTip.Tip="Cooks (processes) all game assets before packaging. Required for a distributable build." />
                         <CheckBox IsChecked="{Binding CleanBuild}" Content="Clean Build"
                                   ToolTip.Tip="Passes -clean to UAT. For a full cache reset, use the Deep Clean button below." />
+                        <CheckBox IsChecked="{Binding BundleVCRedist}" Content="Bundle VC++ Redist"
+                                  ToolTip.Tip="Copies msvcp140.dll, vcruntime140.dll, vcruntime140_1.dll into Binaries/Win64 so players don't need to install Visual C++ Redistributable separately." />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal" Spacing="8">

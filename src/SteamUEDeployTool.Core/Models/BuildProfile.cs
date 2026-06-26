@@ -13,6 +13,7 @@ public sealed class BuildProfile
     public BuildConfiguration BuildConfiguration { get; set; } = BuildConfiguration.Development;
     public bool Cook { get; set; }
     public bool CleanBuild { get; set; }
+    public bool BundleVCRedist { get; set; } = true;
     public string? ExtraArgs { get; set; }
     public string? OutputPathOverride { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

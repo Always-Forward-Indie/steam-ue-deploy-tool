@@ -5,6 +5,7 @@ public enum PushStage
     Idle,
     Validating,
     Building,
+    Bundling,
     Deploying,
     Completed,
     Failed

@@ -1,5 +1,6 @@
 using SteamUEDeployTool.Core.Abstractions;
 using SteamUEDeployTool.Core.Models;
+using SteamUEDeployTool.Core.Models.Enums;
 using SteamUEDeployTool.Core.Validation;
 
 namespace SteamUEDeployTool.Core.Services;
@@ -8,11 +9,16 @@ public sealed class BuildOrchestrator
 {
     private readonly IBuildRunner _buildRunner;
     private readonly IEngineResolver _engineResolver;
+    private readonly IVCRedistBundler _vcredistBundler;
 
-    public BuildOrchestrator(IBuildRunner buildRunner, IEngineResolver engineResolver)
+    public BuildOrchestrator(
+        IBuildRunner buildRunner,
+        IEngineResolver engineResolver,
+        IVCRedistBundler vcredistBundler)
     {
         _buildRunner = buildRunner;
         _engineResolver = engineResolver;
+        _vcredistBundler = vcredistBundler;
     }
 
     public async Task<ValidationResult> ValidateAsync(
@@ -106,6 +112,20 @@ public sealed class BuildOrchestrator
             DateTime.UtcNow, Core.Models.Enums.LogLevel.Info,
             $"Building {profile.Platform}/{profile.BuildConfiguration}..."));
 
-        return await _buildRunner.RunAsync(profile, engine, logProgress, ct);
+        var buildResult = await _buildRunner.RunAsync(profile, engine, logProgress, ct);
+
+        if (buildResult.Success
+            && profile.Platform == Platform.Win64
+            && profile.BundleVCRedist
+            && !string.IsNullOrWhiteSpace(buildResult.OutputPath))
+        {
+            logProgress?.Report(new LogEntry(
+                DateTime.UtcNow, LogLevel.Info,
+                "Bundling VC++ Redist...", nameof(BuildOrchestrator)));
+
+            await _vcredistBundler.BundleAsync(engine, buildResult.OutputPath, logProgress, ct);
+        }
+
+        return buildResult;
     }
 }

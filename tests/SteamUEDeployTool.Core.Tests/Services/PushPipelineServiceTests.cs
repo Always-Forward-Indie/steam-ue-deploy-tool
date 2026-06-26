@@ -12,16 +12,15 @@ public class PushPipelineServiceTests
     private readonly IBuildRunner _buildRunner = Substitute.For<IBuildRunner>();
     private readonly ISteamDeployer _deployer = Substitute.For<ISteamDeployer>();
     private readonly IEngineResolver _engineResolver = Substitute.For<IEngineResolver>();
+    private readonly IVCRedistBundler _vcredistBundler = Substitute.For<IVCRedistBundler>();
 
     [Fact]
     public async Task PushAsync_MissingBuildProfile_ReturnsFailure()
     {
         var engineResolver = Substitute.For<IEngineResolver>();
-        var buildOrch = new BuildOrchestrator(_buildRunner, engineResolver);
+        var buildOrch = new BuildOrchestrator(_buildRunner, engineResolver, _vcredistBundler);
         var deployOrch = new DeployOrchestrator(_deployer, Substitute.For<IAccountStore>(), Substitute.For<IVdfGenerator>());
         var pipeline = new PushPipelineService(buildOrch, deployOrch, _repo);
-
-        _repo.GetByIdAsync<BuildProfile>(Arg.Any<Guid>()).Returns((BuildProfile?)null);
 
         var pushProfile = new PushProfile
         {
@@ -47,7 +46,7 @@ public class PushPipelineServiceTests
         };
 
         var engineResolver = Substitute.For<IEngineResolver>();
-        var buildOrch = new BuildOrchestrator(_buildRunner, engineResolver);
+        var buildOrch = new BuildOrchestrator(_buildRunner, engineResolver, _vcredistBundler);
         var deployOrch = new DeployOrchestrator(_deployer, Substitute.For<IAccountStore>(), Substitute.For<IVdfGenerator>());
         var pipeline = new PushPipelineService(buildOrch, deployOrch, _repo);
 
